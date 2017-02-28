@@ -26,4 +26,10 @@ describe('bst', () => {
     expect(s3.right.head).toBe(3)
   })
 
+  it('should calculate the height', () => {
+    expect(empty().height).toBe(0)
+    expect(singleton(1).height).toBe(1)
+    expect(insert(2, singleton(1)).height).toBe(2)
+  })
+
 })
