@@ -1,4 +1,4 @@
-import { empty, singleton, insert, rotl, rotr, diff, balance } from './bst'
+import { empty, singleton, insert, rotl, rotr, diff, balance, tree } from './bst'
 
 describe('bst', () => {
 
@@ -26,6 +26,13 @@ describe('bst', () => {
     expect(s3.right.head).toBe(3)
   })
 
+  it('insert should self balance', () => {
+    const set = insert(1, insert(2, singleton(3)))
+    expect(set.head).toBe(2)
+    expect(set.left.head).toBe(1)
+    expect(set.right.head).toBe(3)
+  })
+
   it('should calculate the height', () => {
     expect(empty().height).toBe(0)
     expect(singleton(1).height).toBe(1)
@@ -33,38 +40,60 @@ describe('bst', () => {
   })
 
   it('should rotate left', () => {
-    const set = insert(3, insert(2, singleton(1)))
+    const set = tree(1,
+      empty(),
+      tree(2,
+        empty(),
+        singleton(3)))
     const rot = rotl(set)
     expect(rot.head).toBe(2)
     expect(rot.left.head).toBe(1)
+    expect(rot.left.left.height).toBe(0)
+    expect(rot.left.right.height).toBe(0)
     expect(rot.right.head).toBe(3)
+    expect(rot.right.left.height).toBe(0)
+    expect(rot.right.right.height).toBe(0)
   })
 
   it('should rotate right', () => {
-    const set = insert(1, insert(2, singleton(3)))
+    const set = tree(3, tree(2, singleton(1), empty()), empty())
     const rot = rotr(set)
     expect(rot.head).toBe(2)
     expect(rot.left.head).toBe(1)
+    expect(rot.left.left.height).toBe(0)
+    expect(rot.left.right.height).toBe(0)
     expect(rot.right.head).toBe(3)
+    expect(rot.right.left.height).toBe(0)
+    expect(rot.right.right.height).toBe(0)
   })
 
   it('should calculate the diff of a left leaning tree', () => {
-    const set = insert(1, insert(2, singleton(3)))
+    const set = tree(3, tree(2, singleton(1), empty()), empty())
     expect(diff(set)).toBe(-2)
   })
 
   it('should calculate the diff of a right leaning tree', () => {
-    const set = insert(3, insert(2, singleton(1)))
+    const set = tree(1, empty(), tree(2, empty(), singleton(3)))
     expect(diff(set)).toBe(2)
   })
 
+  it('should calculate the diff of a right/left leaning tree', () => {
+    const set = tree(1, empty(), tree(3, singleton(2), empty()))
+    expect(diff(set)).toBe(2)
+  })
+
+  it('should calculate the diff of a left/right leaning tree', () => {
+    const set = tree(3, tree(1, empty(), singleton(2)), empty())
+    expect(diff(set)).toBe(-2)
+  })
+
   it('should calculate the diff of a balanced tree', () => {
-    const set = insert(1, insert(3, singleton(2)))
+    const set = tree(2, singleton(1), singleton(3))
     expect(diff(set)).toBe(0)
   })
 
   it('should balance a right leaning tree', () => {
-    const set = insert(3, insert(2, singleton(1)))
+    const set = tree(1, empty(), tree(2, empty(), singleton(3)))
     const bal = balance(set)
     expect(bal.head).toBe(2)
     expect(bal.left.head).toBe(1)
@@ -72,8 +101,34 @@ describe('bst', () => {
   })
 
   it('should balance a left leaning tree', () => {
-    const set = insert(1, insert(2, singleton(3)))
+    const set = tree(3, tree(2, singleton(1), empty()), empty())
     const bal = balance(set)
+    expect(bal.head).toBe(2)
+    expect(bal.left.head).toBe(1)
+    expect(bal.right.head).toBe(3)
+  })
+
+  it('should balance a right/left leaning tree', () => {
+    const set = tree(1,
+      empty(),
+      tree(3,
+        singleton(2),
+        empty()))
+    const bal = balance(set)
+    expect(diff(bal)).toBe(0)
+    expect(bal.head).toBe(2)
+    expect(bal.left.head).toBe(1)
+    expect(bal.right.head).toBe(3)
+  })
+
+  it('should balance a left/right leaning tree', () => {
+    const set = tree(3,
+      tree(1,
+        empty(),
+        singleton(2)),
+      empty())
+    const bal = balance(set)
+    expect(diff(bal)).toBe(0)
     expect(bal.head).toBe(2)
     expect(bal.left.head).toBe(1)
     expect(bal.right.head).toBe(3)
