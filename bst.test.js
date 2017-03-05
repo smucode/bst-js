@@ -1,4 +1,4 @@
-import { empty, singleton, insert, rotl, rotr, diff, balance, tree } from './bst'
+import { fromList, size, member, empty, singleton, insert, rotl, rotr, diff, balance, tree, foldl, foldr } from './bst'
 
 describe('bst', () => {
 
@@ -16,18 +16,8 @@ describe('bst', () => {
     expect(insert(1, empty()).head).toBe(1)
   })
 
-  it('create set with left and right values', () => {
-    const s1 = insert(2, empty())
-    const s2 = insert(1, s1)
-    const s3 = insert(3, s2)
-
-    expect(s3.head).toBe(2)
-    expect(s3.left.head).toBe(1)
-    expect(s3.right.head).toBe(3)
-  })
-
-  it('insert should self balance', () => {
-    const set = insert(1, insert(2, singleton(3)))
+  it('should self balance', () => {
+    const set = fromList([1,2,3])
     expect(set.head).toBe(2)
     expect(set.left.head).toBe(1)
     expect(set.right.head).toBe(3)
@@ -132,6 +122,34 @@ describe('bst', () => {
     expect(bal.head).toBe(2)
     expect(bal.left.head).toBe(1)
     expect(bal.right.head).toBe(3)
+  })
+
+  it('should find members of a set', () => {
+    const set = tree(3, tree(2, singleton(1), empty()), empty())
+    expect(member(0, set)).toBe(false)
+    expect(member(1, set)).toBe(true)
+    expect(member(2, set)).toBe(true)
+    expect(member(3, set)).toBe(true)
+    expect(member(4, set)).toBe(false)
+  })
+
+  it('should calculate size', () => {
+    expect(size(empty())).toBe(0)
+    expect(size(singleton(1))).toBe(1)
+    const set = tree(3, tree(2, singleton(1), empty()), empty())
+    expect(size(set)).toBe(3)
+  })
+
+  it('should foldl', () => {
+    const set = fromList('abcdef'.split(''))
+    const fn = (acc, item) => acc + item
+    expect(foldl(fn, '', set)).toBe('abcdef')
+  })
+
+  it('should foldr', () => {
+    const set = fromList('abcdef'.split(''))
+    const fn = (acc, item) => acc + item
+    expect(foldr(fn, '', set)).toBe('fedcba')
   })
 
 })

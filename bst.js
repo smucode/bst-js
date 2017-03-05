@@ -1,6 +1,6 @@
-export const empty = () => ({
-  height: 0,
-})
+const EMPTY = { height: 0 }
+
+export const empty = () => EMPTY
 
 export const singleton = head => ({
   head,
@@ -44,7 +44,7 @@ export const balance = set => {
 }
 
 export const insert = (item, set) => {
-  if (!set || !set.head) {
+  if (set === EMPTY) {
     return singleton(item)
   }
   if (item < set.head) {
@@ -54,4 +54,37 @@ export const insert = (item, set) => {
     return balance(tree(set.head, set.left, insert(item, set.right)))
   }
   return set
+}
+
+export const member = (item, set) => {
+  if (set === EMPTY) return false
+  if (item > set.head) return member(item, set.right)
+  if (item < set.head) return member(item, set.left)
+  return true
+}
+
+export const size = set => {
+  if (set === EMPTY) return 0
+  return 1 + size(set.left) + size(set.right)
+}
+
+export const fromList = list => {
+  if (!list.length) return EMPTY
+  const head = list[0]
+  const tail = list.slice(1)
+  return insert(head, fromList(tail))
+}
+
+export const foldl = (fn, acc, set) => {
+  if (set === EMPTY) return acc
+  const accL = foldl(fn, acc, set.left)
+  const accH = fn(accL, set.head)
+  return foldl(fn, accH, set.right)
+}
+
+export const foldr = (fn, acc, set) => {
+  if (set === EMPTY) return acc
+  const accR = foldr(fn, acc, set.right)
+  const accH = fn(accR, set.head)
+  return foldr(fn, accH, set.left)
 }
